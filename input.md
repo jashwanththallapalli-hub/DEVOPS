@@ -1,5 +1,5 @@
-DOCKER NOTES
-
+**DOCKER NOTES
+**
 WHAT IS DOCKER ?
 
 Docker is an **open-source containerization platform** that allows
@@ -1028,3 +1028,4 @@ Because:
 
 <https://docs.docker.com/get-started/docker_cheatsheet.pdf> docker
 commands
+
