@@ -92,6 +92,13 @@ User manages only the application code.
 Example: AWS Elastic Beanstalk, Heroku
 Use: For developers who want to avoid server setup.
 
+
+
+<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/50537772-9998-4ce5-a9a4-f4f6ddc1eeec" />
+
+
+
+
 ***SaaS (Software as a Service):***
 Ready-to-use software delivered over the internet.
 No installation or maintenance needed.
@@ -132,6 +139,9 @@ Example: AWS EC2 for servers + Google BigQuery for analytics.
 
 **AWS,AZURE**,**GCP,ALIBABA**,**ORACLE,IBM**,**SALESFORCE,TENCENT**
 
+<img width="833" height="468" alt="image" src="https://github.com/user-attachments/assets/352ef16b-cc54-4504-a981-7d44d0c3c94c" />
+
+
 **Important words to **remeber:region,availability** **zone, edge** location.**
 
 Source for cloud computing: 
@@ -141,6 +151,9 @@ Cloud provides three main types of storage
 Object storage – store images, back up data, static files., file storage –shared file syste
 
 **AWS-Amazon Web Services**
+
+<img width="960" height="575" alt="image" src="https://github.com/user-attachments/assets/4b55b448-065c-4113-95a1-88f4194237ed" />
+
 
 **WHAT ****IS**** AWS**
 
@@ -257,6 +270,9 @@ S3
 | Public Access Block | By default buckets are private for security |
 
 
+<img width="1154" height="653" alt="image" src="https://github.com/user-attachments/assets/7b6a77e8-319e-46ec-b1b9-1e9ca0fa4bd9" />
+
+
 ### What is Amazon S3? (Perfect Answer)
 
 **Amazon S3 (Simple Storage Service)** is a **cloud storage service** provided by AWS.
@@ -344,6 +360,9 @@ A machine learning model training using the large data sets.
 SOO for such cases s3 normal buckets are too slow so s3 directory is used.
 
 **AWS RDS**
+
+<img width="1348" height="702" alt="image" src="https://github.com/user-attachments/assets/a2d5cfbd-344a-43ad-9db7-952bc4951847" />
+
 
 **Amazon RDS (Relational Database Service)** is a **managed database service** provided by AWS.
  It allows us to run **SQL-based relational databases** in the cloud **without manually installing, configuring, or maintaining them**.
@@ -433,6 +452,9 @@ Accelerated based on the usage and the application it is used** **
 
 **ABOUT EC2 DASHBOARD**
 
+<img width="988" height="510" alt="image" src="https://github.com/user-attachments/assets/97116cdf-1a38-4468-a596-ca3b5c4f8704" />
+
+
 ***INSTANCES:***
 
 This shows how many instances are running or created or available.
@@ -487,6 +509,9 @@ You have **1 instance in total**.
 
 ***LOAD BALANCERS:***
 
+<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/ad59fc64-5872-4d7f-999d-b46ceb98e044" />
+
+
 Distributes traffic across multiple servers.
 Used when you run **websites with multiple EC2 servers**.
 
@@ -528,11 +553,18 @@ We have 1 volume attached to your instance (example: 8GB/10GB type storage).
 **AWS VPC CORE TOPICS**
 
 
+<img width="862" height="528" alt="image" src="https://github.com/user-attachments/assets/b7f8e834-73aa-41db-be12-10ce6d15e2cb" />
+
+
+
 **VPC**: An isolated private network in the AWS its like the private cloud inside the public cloud
 In each VPC we can define IP address range and acts like an private address.
 We can create an multiple VPC for different projects.
 
 **SUBNETS**: Logical divisions inside the VPC.
+
+<img width="521" height="311" alt="image" src="https://github.com/user-attachments/assets/6d95addf-1d78-4dde-a955-a61158891121" />
+
 
 To separate resources based on the access level or on purpose.
 Public subnet: Accessible from the internet(via internet Gate way).
@@ -546,9 +578,15 @@ Each subnet belong to the one available zone.
 Without this your VPC cannot connect to an internet.
 Usually attached to the public subnet.
 
+<img width="720" height="567" alt="image" src="https://github.com/user-attachments/assets/612f5020-f6fa-4b21-beb3-d15f48108e53" />
+
+
 
 **EGRESS ONLY INTERNET** **GATEWAYS: Used** only for IPV6 traffic.
 Allow instances in private subnet to send out bound traffic to the internet but does not receive the inbound traffic.
+
+<img width="426" height="351" alt="image" src="https://github.com/user-attachments/assets/16f959e8-0a99-4627-ac56-06dd5c5e47bf" />
+
 
 **DHCP OPTIONS SET**:
 
@@ -572,6 +610,9 @@ Allows **instances the private subnets to access the internet outbound. For upda
 **VPC PEERING CONNECTIONS: connects** two vpcs together privately.
 It allow communication between two resources in different VPCS with out using the internet.
 
+<img width="499" height="161" alt="image" src="https://github.com/user-attachments/assets/df428f11-5694-4f0f-8405-5c0cc11363b7" />
+
+
 **SECURITY GROUPS: These** are the virtual firewalls for the ec2 instances.
 Control what type of network traffic should be allowed in or out of that instance.
 
@@ -589,6 +630,9 @@ AWS Virtual Private Gateway in your AWS VPC (N. Virginia)
 A VPN connection securely links both routers.
 
 ## VPN Connection
+
+<img width="1257" height="784" alt="image" src="https://github.com/user-attachments/assets/89c05fb6-e277-4e48-835b-0ee6047869de" />
+
 
 A **VPN Connection** (Virtual Private Network) is a **secure, encrypted tunnel** between your **on-premises network** and your **AWS VPC**.
 ### Simple meaning:
@@ -647,6 +691,10 @@ A VPN connection from your office to AWS
 Network Manager shows them all visually in one place — helping you monitor and troubleshoot easily.
 
 ## What are Endpoint Services?
+
+<img width="768" height="576" alt="image" src="https://github.com/user-attachments/assets/2fb727a7-2c46-40a7-a924-a2c7b91f500a" />
+
+
 ### Simple Definition:
 **Endpoint Services** (also called **Private Link services**) let you **privately share your own application or service** with other AWS accounts **without using the public internet**.**Think of it like this:**
 You have built a web service (like an API or an internal app) that you want other teams or clients to use,
@@ -678,6 +726,10 @@ So AWS builds a **private tunnel** between your two buildings.
 A **Site-to-Site VPN** securely connects your **office network** to your **AWS VPC** over the internet — so they act like one private network.
 
 **Bastion Host:**
+
+
+<img width="620" height="380" alt="image" src="https://github.com/user-attachments/assets/484024f5-d856-4dae-bc56-511538a18e4b" />
+
 
 **A Bastion Host is a secure gateway server used to access private resources inside a VPC.**
  It acts as a controlled entry point that allows administrators to connect into private EC2 instances that do not have public IPs.
