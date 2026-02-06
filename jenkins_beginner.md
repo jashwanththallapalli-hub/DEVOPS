@@ -6,7 +6,6 @@
 1. **Read sequentially** - Each section builds on the previous one
 2. **Practice immediately** - Don't just read, DO
 3. **Bookmark this** - You'll refer back to it often
-4. **Time estimate**: 2-3 days to complete everything
 
 ---
 
