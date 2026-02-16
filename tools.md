@@ -2011,6 +2011,1538 @@ Scenario: Database becomes slow
 
 ---
 
-**You're now equipped with the knowledge of these tools. Start practicing with free trials of each, and by the time you join your SRE role, you'll be ahead of most new hires!**
+**Ah yes! ServiceNow and Jira are CRITICAL tools for SREs. Let me break these down for you.**
 
-**Any specific tool you want me to dive deeper into? Or ready to start practicing?**
+---
+
+# **6. SERVICENOW - Enterprise IT Service Management (ITSM)**
+
+## **What is ServiceNow?**
+
+**Think of ServiceNow as "the central hub for all IT operations in large enterprises"**
+
+It's an **ITSM (IT Service Management)** platform that handles:
+- Incident Management
+- Change Management
+- Problem Management
+- Request Management
+- Asset Management
+- Configuration Management Database (CMDB)
+- Service Catalog
+
+**In simple terms:** ServiceNow is where all IT work gets tracked, approved, and documented in large companies.
+
+---
+
+## **Why ServiceNow Exists**
+
+**The problem without ServiceNow:**
+
+```
+Scenario: Need to deploy new database server
+
+Without ServiceNow:
+├─ Engineer: "Can I deploy this Friday?"
+├─ Manager: "I don't know, check with security"
+├─ Security: "Check with compliance"
+├─ Compliance: "Did you file paperwork?"
+├─ Engineer: "What paperwork?"
+└─> 3 weeks later, still not deployed, lost in email chains
+
+Result: Chaos, no accountability, things break
+```
+
+**With ServiceNow:**
+
+```
+Scenario: Need to deploy new database server
+
+With ServiceNow:
+1. Engineer creates "Change Request" in ServiceNow
+2. Auto-routed to: Manager → Security → Compliance
+3. Each approves with one click (takes 2 days)
+4. Scheduled deployment window assigned
+5. All documentation in one place
+6. Post-deployment review tracked
+└─> Deployed on schedule, audit trail exists
+
+Result: Organized, compliant, trackable
+```
+
+---
+
+## **ServiceNow Core Modules (What SREs Use)**
+
+### **A) Incident Management**
+
+**What is an Incident?**
+**Unplanned interruption or reduction in quality of IT service**
+
+Examples:
+- Website is down
+- API is slow
+- Database crashed
+- User can't log in
+
+---
+
+### **Incident Lifecycle in ServiceNow:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               INCIDENT LIFECYCLE                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. NEW                                                      │
+│     ├─ Incident created (auto from monitoring or manual)    │
+│     ├─ Assigned to: Triage team                            │
+│     └─ Priority calculated automatically                     │
+│                                                              │
+│  2. ASSIGNED                                                 │
+│     ├─ Routed to appropriate team (SRE, Network, etc.)     │
+│     └─ On-call engineer picks it up                         │
+│                                                              │
+│  3. IN PROGRESS                                              │
+│     ├─ Engineer is actively working on it                   │
+│     ├─ Updates added as work notes                          │
+│     └─ Status updates for stakeholders                      │
+│                                                              │
+│  4. RESOLVED                                                 │
+│     ├─ Issue fixed                                          │
+│     ├─ Resolution notes documented                          │
+│     └─> Auto-notification sent to requester                 │
+│                                                              │
+│  5. CLOSED                                                   │
+│     ├─ Requester confirms fix                               │
+│     ├─ Incident archived                                    │
+│     └─ Metrics tracked (MTTR, MTTA, etc.)                  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **Incident Record in ServiceNow:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  INCIDENT: INC0010523                                        ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Short Description: Production API returning 500 errors     ║
+║                                                              ║
+║  Priority: 1 - Critical    🔴                               ║
+║  State: In Progress                                          ║
+║  Assignment Group: SRE Team                                  ║
+║  Assigned To: Alice Johnson                                  ║
+║                                                              ║
+║  Opened: 2024-02-16 03:42:15 (by Monitoring Alert)         ║
+║  Updated: 2024-02-16 03:58:32                               ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ DETAILS                                                 │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Caller: System (Datadog Integration)                   │ ║
+║  │ Category: Application                                   │ ║
+║  │ Subcategory: Performance                                │ ║
+║  │ Configuration Item: api-prod-cluster                    │ ║
+║  │ Business Service: Customer Portal                       │ ║
+║  │ Impact: High (500+ users affected)                      │ ║
+║  │ Urgency: High                                           │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ DESCRIPTION                                             │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Datadog alert: API error rate exceeded 5%              │ ║
+║  │ Affected endpoint: /api/v1/checkout                     │ ║
+║  │ Error: 500 Internal Server Error                        │ ║
+║  │ Time started: 03:42 UTC                                 │ ║
+║  │                                                          │ ║
+║  │ Datadog dashboard: https://app.datadoghq.com/...       │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ WORK NOTES (Internal)                                   │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ 03:44 - Alice: Acknowledged. Checking APM traces.      │ ║
+║  │ 03:48 - Alice: Found root cause - database connection  │ ║
+║  │              pool exhausted. Increasing pool size.      │ ║
+║  │ 03:55 - Alice: Fix deployed. Monitoring for recovery.  │ ║
+║  │ 03:58 - Alice: Error rate back to normal. Resolving.   │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RESOLUTION NOTES (Customer-facing)                      │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Issue: Database connection pool exhaustion              │ ║
+║  │ Resolution: Increased connection pool from 50 to 100    │ ║
+║  │ Downtime: 16 minutes                                    │ ║
+║  │ Preventive action: Added monitoring for pool usage     │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RELATED RECORDS                                         │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Problem: PRB0001234 (Connection pool sizing)           │ ║
+║  │ Change: CHG0005678 (Deployed fix)                       │ ║
+║  │ Parent Incident: None                                   │ ║
+║  │ Child Incidents: INC0010524, INC0010525 (related)      │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  [Update] [Resolve] [Escalate] [Close]                     ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **Priority Matrix in ServiceNow:**
+
+```
+Priority = Impact × Urgency
+
+┌─────────────────────────────────────────────────────────┐
+│              IMPACT                                      │
+│         │ High  │ Medium │ Low   │                      │
+├─────────┼───────┼────────┼───────┤                      │
+│ High    │ P1    │ P2     │ P3    │                      │
+│ (ASAP)  │Critical│High    │Medium │                      │
+├─────────┼───────┼────────┼───────┤                      │
+│ Medium  │ P2    │ P3     │ P4    │  URGENCY             │
+│ (Hours) │ High  │ Medium │ Low   │                      │
+├─────────┼───────┼────────┼───────┤                      │
+│ Low     │ P3    │ P4     │ P5    │                      │
+│ (Days)  │Medium │ Low    │Planning│                     │
+└─────────┴───────┴────────┴───────┘                      │
+
+Examples:
+P1: Production database down (1000s of users affected)
+P2: One microservice degraded (hundreds affected)  
+P3: Dev environment issue (10 developers affected)
+P4: Feature request
+P5: Documentation update
+```
+
+---
+
+### **Incident SLAs (Service Level Agreements):**
+
+```
+Response Time SLA:
+├─ P1 (Critical): Respond in 15 minutes
+├─ P2 (High): Respond in 1 hour
+├─ P3 (Medium): Respond in 4 hours
+├─ P4 (Low): Respond in 1 business day
+└─ P5 (Planning): Respond in 5 business days
+
+Resolution Time SLA:
+├─ P1 (Critical): Resolve in 4 hours
+├─ P2 (High): Resolve in 8 hours
+├─ P3 (Medium): Resolve in 48 hours
+├─ P4 (Low): Resolve in 5 business days
+└─ P5 (Planning): Resolve in 30 days
+
+ServiceNow tracks SLA breaches:
+┌────────────────────────────────────────┐
+│ INC0010523                             │
+│ Response SLA: ✅ Met (2 min)           │
+│ Resolution SLA: ✅ Met (16 min)        │
+│ Status: On Time                        │
+└────────────────────────────────────────┘
+
+If SLA is about to breach:
+└─> Auto-escalate to manager
+```
+
+---
+
+### **B) Problem Management**
+
+**What is a Problem?**
+**Root cause of one or more incidents**
+
+**Difference between Incident and Problem:**
+
+```
+INCIDENT: "The symptom"
+├─ Website is slow (happens multiple times)
+├─ Each time = new incident
+└─> Fix temporarily, but keeps happening
+
+PROBLEM: "The root cause"
+├─ Why is website slow?
+├─> Database needs more memory
+└─> Fix once, prevents future incidents
+```
+
+---
+
+### **Problem Record in ServiceNow:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  PROBLEM: PRB0001234                                         ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Short Description: Recurring database connection timeouts  ║
+║                                                              ║
+║  State: Root Cause Analysis                                  ║
+║  Assignment Group: SRE Team                                  ║
+║  Assigned To: Bob Smith                                      ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RELATED INCIDENTS                                       │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ INC0010523 - API 500 errors (Feb 16)                   │ ║
+║  │ INC0010487 - Database timeout (Feb 12)                 │ ║
+║  │ INC0010401 - Slow queries (Feb 8)                      │ ║
+║  │ INC0010356 - Connection errors (Feb 3)                 │ ║
+║  │                                                          │ ║
+║  │ Pattern: Happens every 4-5 days                         │ ║
+║  │ Impact: 4 incidents, 200+ users affected total          │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ ROOT CAUSE ANALYSIS                                     │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Finding 1: Connection pool size = 50                    │ ║
+║  │ Finding 2: Peak traffic = 100 concurrent requests       │ ║
+║  │ Finding 3: No connection timeout configured             │ ║
+║  │                                                          │ ║
+║  │ Root Cause: Connection pool too small for load          │ ║
+║  │                                                          │ ║
+║  │ Why-Why Analysis:                                       │ ║
+║  │ 1. Why timeouts? → Pool exhausted                       │ ║
+║  │ 2. Why exhausted? → Only 50 connections                 │ ║
+║  │ 3. Why only 50? → Default config never updated          │ ║
+║  │ 4. Why not updated? → No monitoring of pool usage       │ ║
+║  │ 5. Why no monitoring? → Wasn't in setup checklist       │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ WORKAROUND                                              │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Manually restart connection pool when issue occurs      │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ PERMANENT FIX (Known Error)                             │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ 1. Increase connection pool to 150                      │ ║
+║  │ 2. Add monitoring for pool usage                        │ ║
+║  │ 3. Set connection timeout to 30s                        │ ║
+║  │ 4. Update deployment checklist                          │ ║
+║  │                                                          │ ║
+║  │ Change Request: CHG0005678 (Approved)                   │ ║
+║  │ Implementation: Scheduled for Feb 20                     │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **C) Change Management**
+
+**What is a Change?**
+**Any modification to IT infrastructure or services**
+
+Examples:
+- Deploy new code
+- Update configuration
+- Add new server
+- Upgrade database
+- Change firewall rules
+
+**Why Change Management?**
+
+```
+Without Change Management:
+Engineer: "Let me just update prod real quick..."
+├─> Breaks production
+├─> No one knows what changed
+├─> Takes hours to rollback
+└─> CEO screaming
+
+With Change Management:
+Engineer: "Let me submit a change request..."
+├─> Reviewed by team
+├─> Scheduled maintenance window
+├─> Rollback plan documented
+├─> Everyone aware
+└─> Smooth deployment
+```
+
+---
+
+### **Change Types:**
+
+```
+1. STANDARD CHANGE (Pre-approved, low risk)
+   ├─ Adding disk space
+   ├─ Restarting service
+   ├─ Routine patching
+   └─> No approval needed, just log it
+
+2. NORMAL CHANGE (Requires approval)
+   ├─ Code deployments
+   ├─ Infrastructure changes
+   ├─> Goes through CAB (Change Advisory Board)
+
+3. EMERGENCY CHANGE (Fast-track for outages)
+   ├─ Fixing production outage
+   ├─> Abbreviated approval process
+   └─> Reviewed post-implementation
+```
+
+---
+
+### **Change Request in ServiceNow:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CHANGE REQUEST: CHG0005678                                  ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Short Description: Increase database connection pool size  ║
+║                                                              ║
+║  Type: Normal Change                                         ║
+║  Risk: Medium                                                ║
+║  Impact: Medium                                              ║
+║  State: Scheduled                                            ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ PLANNING                                                │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Requested by: Alice Johnson (SRE)                      │ ║
+║  │ Assignment Group: SRE Team                              │ ║
+║  │ Implementation: Bob Smith                               │ ║
+║  │                                                          │ ║
+║  │ Planned Start: Feb 20, 2024 02:00 AM UTC               │ ║
+║  │ Planned End: Feb 20, 2024 02:30 AM UTC                 │ ║
+║  │ Duration: 30 minutes                                    │ ║
+║  │ Maintenance Window: Yes                                 │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ IMPLEMENTATION PLAN                                     │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ 1. Take backup of current configuration (5 min)        │ ║
+║  │ 2. Update connection pool settings (2 min)             │ ║
+║  │    - max_connections: 50 → 150                         │ ║
+║  │    - connection_timeout: none → 30s                    │ ║
+║  │ 3. Restart application servers (10 min)                │ ║
+║  │    - Rolling restart (one at a time)                   │ ║
+║  │ 4. Verify connections in Datadog (5 min)               │ ║
+║  │ 5. Monitor for 10 minutes                              │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ BACKOUT PLAN (If things go wrong)                      │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ 1. Restore configuration from backup                   │ ║
+║  │ 2. Restart application servers                         │ ║
+║  │ 3. Verify service is stable                            │ ║
+║  │ ETA: 15 minutes                                         │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RISK ASSESSMENT                                         │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Risk 1: Application restart causes brief downtime      │ ║
+║  │   Mitigation: Rolling restart (one server at a time)   │ ║
+║  │                                                          │ ║
+║  │ Risk 2: New settings cause memory issues               │ ║
+║  │   Mitigation: Monitoring + quick rollback plan         │ ║
+║  │                                                          │ ║
+║  │ Overall Risk: MEDIUM                                    │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ APPROVALS                                               │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ ✅ Technical Lead (Alice): Approved                    │ ║
+║  │ ✅ Manager (David): Approved                           │ ║
+║  │ ✅ CAB (Change Advisory Board): Approved               │ ║
+║  │ ⏳ Customer Success: Pending notification              │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ AFFECTED CONFIGURATION ITEMS (CIs)                     │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ - api-prod-server-1                                    │ ║
+║  │ - api-prod-server-2                                    │ ║
+║  │ - api-prod-server-3                                    │ ║
+║  │ - database-prod-01                                     │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RELATED RECORDS                                         │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Problem: PRB0001234                                     │ ║
+║  │ Incidents: INC0010523, INC0010487                      │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  [Approve] [Reject] [Implement] [Review]                   ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **Change Advisory Board (CAB) Meeting:**
+
+```
+Weekly CAB Meeting (Every Wednesday 10 AM)
+
+Attendees:
+├─ SRE Team Lead
+├─ Development Manager
+├─ Security Team
+├─ Network Team
+├─ Change Manager (Facilitator)
+└─ Business stakeholders
+
+Agenda:
+1. Review upcoming changes (next 7 days)
+2. Assess risk and impact
+3. Check for conflicts (multiple changes same time?)
+4. Approve/Reject/Defer changes
+5. Review past week's changes (lessons learned)
+
+Example:
+┌─────────────────────────────────────────────────────────┐
+│ CHG0005678 - Database pool size increase                │
+│ Risk: Medium | Impact: Medium | Window: Sat 2 AM       │
+│                                                          │
+│ CAB Discussion:                                          │
+│ ├─ Security: ✅ No security concerns                    │
+│ ├─ Network: ✅ Bandwidth sufficient                     │
+│ ├─ Dev: ✅ Code ready for larger pool                   │
+│ └─ Business: ✅ Low traffic time                        │
+│                                                          │
+│ Decision: APPROVED ✅                                    │
+│ Condition: Must have rollback plan (already documented) │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **D) Request Management (Service Catalog)**
+
+**What is a Request?**
+**User asking for something (not an incident or problem)**
+
+Examples:
+- "I need access to production database"
+- "Create a new VM for testing"
+- "Install Python on my server"
+- "Add me to SRE team Slack channel"
+
+---
+
+### **Service Catalog in ServiceNow:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║           SERVICE CATALOG                                    ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Popular Services:                                           ║
+║                                                              ║
+║  ┌─────────────────┐  ┌─────────────────┐                  ║
+║  │ 🖥️  Request VM  │  │ 🔐 Request      │                  ║
+║  │                 │  │    Access       │                  ║
+║  │ Deploy a new    │  │                 │                  ║
+║  │ virtual machine │  │ Get access to   │                  ║
+║  │                 │  │ systems/tools   │                  ║
+║  │ [Order Now]     │  │ [Order Now]     │                  ║
+║  └─────────────────┘  └─────────────────┘                  ║
+║                                                              ║
+║  ┌─────────────────┐  ┌─────────────────┐                  ║
+║  │ ☁️  AWS         │  │ 📦 Software     │                  ║
+║  │    Resources    │  │    Install      │                  ║
+║  │                 │  │                 │                  ║
+║  │ Request AWS     │  │ Install software│                  ║
+║  │ services        │  │ on your server  │                  ║
+║  │ [Order Now]     │  │ [Order Now]     │                  ║
+║  └─────────────────┘  └─────────────────┘                  ║
+║                                                              ║
+║  ┌─────────────────┐  ┌─────────────────┐                  ║
+║  │ 🗄️  Database    │  │ 🔧 Change       │                  ║
+║  │    Access       │  │    Firewall     │                  ║
+║  │                 │  │                 │                  ║
+║  │ Request DB      │  │ Request firewall│                  ║
+║  │ permissions     │  │ rule change     │                  ║
+║  │ [Order Now]     │  │ [Order Now]     │                  ║
+║  └─────────────────┘  └─────────────────┘                  ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **Request Fulfillment Example:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  REQUEST: RITM0045678                                        ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Catalog Item: Request Production Database Access           ║
+║                                                              ║
+║  Requested by: John Developer                                ║
+║  Requested for: John Developer                               ║
+║  Date: Feb 16, 2024 10:30 AM                                ║
+║  State: Pending Approval                                     ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ REQUEST DETAILS                                         │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Database: production-mysql-01                           │ ║
+║  │ Access Level: Read-Only                                 │ ║
+║  │ Duration: 30 days                                       │ ║
+║  │ Business Justification:                                 │ ║
+║  │   Need to debug customer-reported issue with orders    │ ║
+║  │   Ticket: INC0010534                                    │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ APPROVAL CHAIN                                          │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ 1. Manager (Sarah): ✅ Approved (10:45 AM)             │ ║
+║  │ 2. Database Admin: ⏳ Pending                           │ ║
+║  │ 3. Security Team: ⏳ Pending                            │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ FULFILLMENT TASKS (Auto-created after approval)        │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ □ Create database user account                         │ ║
+║  │ □ Grant read-only permissions                          │ ║
+║  │ □ Add to monitoring whitelist                          │ ║
+║  │ □ Send credentials to requester                        │ ║
+║  │ □ Set expiration date (30 days)                        │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **E) Configuration Management Database (CMDB)**
+
+**What is CMDB?**
+**A database of all your IT assets and how they relate to each other**
+
+Think of it as "the blueprint of your entire infrastructure"
+
+---
+
+### **Configuration Items (CIs) in CMDB:**
+
+```
+CI Types:
+├─ Hardware
+│  ├─ Servers (Physical, Virtual)
+│  ├─ Network devices (Routers, Switches)
+│  ├─ Storage devices
+│  └─ Laptops, Desktops
+│
+├─ Software
+│  ├─ Operating Systems
+│  ├─ Applications
+│  ├─ Databases
+│  └─ Middleware
+│
+├─ Cloud Resources
+│  ├─ AWS EC2 instances
+│  ├─ RDS databases
+│  ├─ S3 buckets
+│  └─ Load Balancers
+│
+└─ Services
+   ├─ Business services (Customer Portal)
+   ├─ Technical services (API Service)
+   └─ Infrastructure services (DNS)
+```
+
+---
+
+### **CI Record Example:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CONFIGURATION ITEM: api-prod-server-01                      ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Type: Linux Server (AWS EC2)                                ║
+║  Status: In Production                                       ║
+║  Environment: Production                                     ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ DETAILS                                                 │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Hostname: api-prod-server-01.company.com               │ ║
+║  │ IP Address: 10.0.1.123                                  │ ║
+║  │ Instance ID: i-0abc123def456                            │ ║
+║  │ Instance Type: t3.medium                                │ ║
+║  │ Region: us-east-1                                       │ ║
+║  │ Availability Zone: us-east-1a                           │ ║
+║  │ Operating System: Ubuntu 22.04 LTS                      │ ║
+║  │ CPU: 2 vCPUs                                            │ ║
+║  │ Memory: 4 GB                                            │ ║
+║  │ Disk: 50 GB gp3                                         │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ OWNERSHIP                                               │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Owned by: SRE Team                                      │ ║
+║  │ Managed by: Alice Johnson                               │ ║
+║  │ Cost Center: Engineering                                │ ║
+║  │ Support Group: SRE Team                                 │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ RELATIONSHIPS (How this connects to other things)      │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Runs on → AWS VPC (vpc-0xyz789)                        │ ║
+║  │ Hosts → API Application v2.3                            │ ║
+║  │ Connects to → database-prod-01                          │ ║
+║  │ Behind → Load Balancer (api-prod-lb)                   │ ║
+║  │ Monitored by → Datadog Agent                            │ ║
+║  │ Backed up by → AWS Backup Service                       │ ║
+║  │ Part of → Customer Portal (Business Service)            │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ CHANGE HISTORY                                          │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Feb 16: CHG0005678 - Increased connection pool          │ ║
+║  │ Feb 10: CHG0005601 - Security patch applied             │ ║
+║  │ Feb 1: CHG0005512 - Upgraded to v2.3                    │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ INCIDENTS & PROBLEMS                                    │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Recent Incidents:                                       │ ║
+║  │ - INC0010523: High response time (Resolved)            │ ║
+║  │ - INC0010487: Connection timeout (Resolved)            │ ║
+║  │                                                          │ ║
+║  │ Known Problems:                                         │ ║
+║  │ - PRB0001234: Connection pool sizing                    │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **CMDB Service Map (Visual Relationships):**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│            Customer Portal (Business Service)                │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+        ▼               ▼               ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│   Frontend   │ │   API Load   │ │   Database   │
+│   (CloudFron│ │   Balancer   │ │   (RDS)      │
+└──────────────┘ └──────┬───────┘ └──────────────┘
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+        ▼               ▼               ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│ api-prod-01  │ │ api-prod-02  │ │ api-prod-03  │
+│ (EC2)        │ │ (EC2)        │ │ (EC2)        │
+└──────────────┘ └──────────────┘ └──────────────┘
+
+Impact Analysis:
+If database-prod-01 fails:
+└─> Affects: Customer Portal (High Impact)
+    └─> Affects: 10,000+ users
+
+If api-prod-01 fails:
+└─> Affects: Customer Portal (Low Impact)
+    └─> Load Balancer redirects to api-prod-02/03
+```
+
+---
+
+### **F) ServiceNow Integrations (The SRE Workflow)**
+
+```
+ServiceNow as Central Hub:
+
+┌─────────────┐
+│  Datadog    │──────┐
+└─────────────┘      │
+                     │  Alerts
+┌─────────────┐      │  create
+│  Site24x7   │──────┤  Incidents
+└─────────────┘      │  in ServiceNow
+                     │
+┌─────────────┐      │
+│  OpsGenie   │──────┘
+└─────────────┘
+
+         │
+         ▼
+┌─────────────────────┐
+│   SERVICENOW        │
+│   (Central Hub)     │
+└─────────┬───────────┘
+          │
+          │ Updates
+          │
+    ┌─────┴─────┐
+    │           │
+    ▼           ▼
+┌─────────┐ ┌─────────┐
+│  Jira   │ │  Slack  │
+│ (Tasks) │ │ (Notify)│
+└─────────┘ └─────────┘
+```
+
+---
+
+### **Typical SRE Workflow with ServiceNow:**
+
+```
+08:00 AM - Morning
+
+1. Check ServiceNow Dashboard
+   ├─ My Incidents: 3 open
+   ├─ My Changes: 1 scheduled for tonight
+   └─ My Approvals: 2 pending
+
+2. Review Incidents assigned to me
+   ├─ INC0010567: P3 - Slow API (investigate today)
+   └─> Add to my todo list
+
+3. Approve access request
+   ├─ RITM0045789: Developer needs staging access
+   └─> Click [Approve]
+
+---
+
+02:00 PM - Afternoon
+
+4. Datadog alert fires: Database CPU high
+   ├─> Auto-creates incident in ServiceNow
+   ├─> INC0010589: P2 - High database CPU
+   ├─> Auto-assigned to me (I'm on-call)
+   └─> OpsGenie pages me
+
+5. I acknowledge in OpsGenie
+   └─> Status syncs to ServiceNow (In Progress)
+
+6. I investigate using Datadog
+   └─> Find slow query
+
+7. I update ServiceNow incident
+   ├─> Work Note: "Found slow query, optimizing"
+   └─> Status remains: In Progress
+
+8. I fix the query
+   └─> Update ServiceNow: "Query optimized, monitoring"
+
+9. Issue resolves
+   ├─> ServiceNow incident: Resolved
+   └─> OpsGenie incident: Closed
+
+---
+
+11:00 PM - Night (Change Window)
+
+10. Implement scheduled change
+    ├─> CHG0005678: Database config change
+    ├─> Status: Implementation
+    └─> Follow documented plan
+
+11. Change successful
+    ├─> Update ServiceNow: Implementation successful
+    ├─> Status: Review
+    └─> Close change tomorrow after monitoring
+```
+
+---
+
+## **ServiceNow Reporting & Metrics**
+
+```
+SRE Team Dashboard in ServiceNow:
+
+┌─────────────────────────────────────────────────────────┐
+│  INCIDENTS (This Month)                                  │
+├─────────────────────────────────────────────────────────┤
+│  Total: 124                                              │
+│  ├─ P1: 3 (2.4%)                                        │
+│  ├─ P2: 15 (12.1%)                                      │
+│  ├─ P3: 56 (45.2%)                                      │
+│  └─ P4: 50 (40.3%)                                      │
+│                                                          │
+│  MTTR (Mean Time To Resolve): 4.2 hours                 │
+│  MTTA (Mean Time To Acknowledge): 8 minutes             │
+│  SLA Compliance: 96.8%                                   │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  CHANGES (This Month)                                    │
+├─────────────────────────────────────────────────────────┤
+│  Planned: 45                                             │
+│  ├─ Successful: 43 (95.6%)                              │
+│  ├─ Failed: 1 (2.2%)                                    │
+│  └─ Rolled Back: 1 (2.2%)                               │
+│                                                          │
+│  Emergency Changes: 2                                    │
+│  Change Success Rate: 95.6%                              │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  PROBLEMS (This Month)                                   │
+├─────────────────────────────────────────────────────────┤
+│  New: 5                                                  │
+│  Resolved: 3                                             │
+│  Open: 7                                                 │
+│                                                          │
+│  Top Problem: Database connection pooling (4 incidents) │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+# **7. JIRA - Project & Task Management**
+
+## **What is Jira?**
+
+**Think of Jira as "the team's to-do list + project tracker"**
+
+Originally built for software development (bug tracking), now used for:
+- Sprint planning (Agile/Scrum)
+- Bug tracking
+- Task management
+- Feature development
+- SRE project work
+
+---
+
+## **ServiceNow vs Jira: The Difference**
+
+```
+SERVICENOW:
+├─ Incidents (unplanned interruptions)
+├─ Problems (root cause analysis)
+├─ Changes (approvals, compliance)
+└─> Focus: Operations, ITSM, governance
+
+JIRA:
+├─ Stories (features to build)
+├─ Tasks (work to do)
+├─ Bugs (defects to fix)
+├─ Epics (big initiatives)
+└─> Focus: Development, project tracking
+
+In Practice:
+├─ ServiceNow: "Production is down!" (react)
+└─ Jira: "Build new monitoring dashboard" (plan)
+```
+
+---
+
+## **Jira Core Concepts**
+
+### **A) Issue Types**
+
+```
+1. EPIC (Big initiative, 1-3 months)
+   └─ Example: "Migrate to Kubernetes"
+
+2. STORY (User feature, 1-2 weeks)
+   └─ Example: "As a user, I want password reset"
+
+3. TASK (Work item, 1-3 days)
+   └─ Example: "Set up Datadog monitoring for API"
+
+4. BUG (Defect, varies)
+   └─ Example: "Login button not working on mobile"
+
+5. SUBTASK (Part of a task, hours)
+   └─ Example: "Write Datadog configuration file"
+```
+
+---
+
+### **B) Workflow (Issue Lifecycle)**
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                    JIRA WORKFLOW                            │
+├────────────────────────────────────────────────────────────┤
+│                                                             │
+│  TO DO                                                      │
+│  ├─ Issue created                                          │
+│  ├─ Not started yet                                        │
+│  └─ Waiting in backlog                                     │
+│       │                                                     │
+│       │ (Developer picks it up)                            │
+│       ▼                                                     │
+│  IN PROGRESS                                                │
+│  ├─ Actively being worked on                               │
+│  ├─ Assigned to team member                                │
+│  └─ Status updates in comments                             │
+│       │                                                     │
+│       │ (Work complete, ready for review)                  │
+│       ▼                                                     │
+│  IN REVIEW                                                  │
+│  ├─ Code review happening                                  │
+│  ├─ Peer checking work                                     │
+│  └─ May go back to In Progress if changes needed           │
+│       │                                                     │
+│       │ (Approved)                                         │
+│       ▼                                                     │
+│  DONE                                                       │
+│  ├─ Work completed                                         │
+│  ├─ Deployed to production                                 │
+│  └─ Issue closed                                           │
+│                                                             │
+└────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **C) Jira Board (Kanban/Scrum)**
+
+**Kanban Board View:**
+
+```
+╔════════════════════════════════════════════════════════════╗
+║  SRE Team Board                              [Sprint 23]   ║
+╠════════════════════════════════════════════════════════════╣
+║                                                            ║
+║  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      ║
+║  │   TO DO     │  │ IN PROGRESS │  │    DONE     │      ║
+║  ├─────────────┤  ├─────────────┤  ├─────────────┤      ║
+║  │             │  │             │  │             │      ║
+║  │ [SRE-123]   │  │ [SRE-120]   │  │ [SRE-115]   │      ║
+║  │ Set up      │  │ Migrate DB  │  │ K8s setup   │      ║
+║  │ monitoring  │  │ to RDS      │  │ complete    │      ║
+║  │ Alice       │  │ Bob (3d)    │  │ ✓           │      ║
+║  │             │  │             │  │             │      ║
+║  │ [SRE-124]   │  │ [SRE-121]   │  │ [SRE-116]   │      ║
+║  │ Update      │  │ Fix SSL     │  │ Datadog     │      ║
+║  │ runbooks    │  │ cert issue  │  │ integrated  │      ║
+║  │ Charlie     │  │ Alice (1d)  │  │ ✓           │      ║
+║  │             │  │             │  │             │      ║
+║  │ [SRE-125]   │  │             │  │ [SRE-117]   │      ║
+║  │ Optimize    │  │             │  │ Load test   │      ║
+║  │ database    │  │             │  │ passed      │      ║
+║  │ Unassigned  │  │             │  │ ✓           │      ║
+║  │             │  │             │  │             │      ║
+║  └─────────────┘  └─────────────┘  └─────────────┘      ║
+║                                                            ║
+║  WIP Limit:  -      WIP: 2/3       Completed: 12         ║
+╚════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **D) Jira Ticket Example:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  SRE-123: Set up Datadog monitoring for new API service     ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Type: Task                                                  ║
+║  Status: In Progress                                         ║
+║  Priority: High                                              ║
+║  Assignee: Alice Johnson                                     ║
+║  Reporter: Bob Smith (Tech Lead)                             ║
+║  Sprint: Sprint 23                                           ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ DESCRIPTION                                             │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Set up comprehensive monitoring for the new Payment    │ ║
+║  │ API service that was just deployed.                     │ ║
+║  │                                                          │ ║
+║  │ Requirements:                                            │ ║
+║  │ - Monitor API response times                            │ ║
+║  │ - Track error rates                                     │ ║
+║  │ - Set up alerts for high latency (>500ms)              │ ║
+║  │ - Set up alerts for error rate (>1%)                   │ ║
+║  │ - Create dashboard for team visibility                  │ ║
+║  │ - Integrate with OpsGenie                               │ ║
+║  │                                                          │ ║
+║  │ Related:                                                 │ ║
+║  │ - ServiceNow CHG0005690 (deployment change)            │ ║
+║  │ - Confluence page: "Monitoring Standards"               │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ ACCEPTANCE CRITERIA                                     │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ ☑ Datadog APM instrumentation added to code            │ ║
+║  │ ☑ Custom metrics being sent (requests, errors)         │ ║
+║  │ ☐ Dashboard created and shared with team               │ ║
+║  │ ☐ Alerts configured and tested                         │ ║
+║  │ ☐ Runbook updated with monitoring details              │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ SUBTASKS                                                │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ ✓ SRE-123.1: Install Datadog agent on API servers     │ ║
+║  │ ✓ SRE-123.2: Instrument code with APM                  │ ║
+║  │ ⏳ SRE-123.3: Create monitoring dashboard (In Progress)│ ║
+║  │ ☐ SRE-123.4: Configure alerts                          │ ║
+║  │ ☐ SRE-123.5: Test alert workflow                       │ ║
+║  │ ☐ SRE-123.6: Update runbook                            │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ COMMENTS / ACTIVITY                                     │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Feb 16, 10:30 AM - Alice:                              │ ║
+║  │   Started work. Datadog agent installed on all 3       │ ║
+║  │   API servers. APM traces showing up correctly.        │ ║
+║  │                                                          │ ║
+║  │ Feb 16, 2:15 PM - Bob:                                 │ ║
+║  │   Great! Make sure to include both p95 and p99         │ ║
+║  │   latency in the dashboard. Also add request rate.     │ ║
+║  │                                                          │ ║
+║  │ Feb 16, 3:45 PM - Alice:                               │ ║
+║  │   Dashboard created: [link]. Working on alerts now.    │ ║
+║  │   ETA: Tomorrow morning for completion.                 │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ TIME TRACKING                                           │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Estimated: 8 hours                                      │ ║
+║  │ Logged: 5 hours                                         │ ║
+║  │ Remaining: 3 hours                                      │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  ┌────────────────────────────────────────────────────────┐ ║
+║  │ LINKED ISSUES                                           │ ║
+║  ├────────────────────────────────────────────────────────┤ ║
+║  │ Blocks: SRE-130 (Go-live for Payment API)             │ ║
+║  │ Related: DEV-456 (Payment API development)             │ ║
+║  │ Related: SEC-789 (Security review)                      │ ║
+║  └────────────────────────────────────────────────────────┘ ║
+║                                                              ║
+║  Labels: monitoring, datadog, payment-api, high-priority   ║
+║                                                              ║
+║  [Edit] [Comment] [Assign] [Workflow ▼] [···]             ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **E) Sprints (Agile/Scrum)**
+
+**What is a Sprint?**
+**Time-boxed period (usually 2 weeks) where team commits to complete work**
+
+```
+Sprint Planning:
+┌────────────────────────────────────────────────────────┐
+│  Sprint 23 (Feb 12 - Feb 25)                          │
+├────────────────────────────────────────────────────────┤
+│  Goal: Improve monitoring and stability               │
+│                                                         │
+│  Team Capacity: 80 story points (4 people × 2 weeks)  │
+│                                                         │
+│  Committed Work:                                        │
+│  ├─ SRE-120: Migrate DB to RDS (13 points)            │
+│  ├─ SRE-121: Fix SSL cert automation (8 points)       │
+│  ├─ SRE-123: Set up API monitoring (5 points)         │
+│  ├─ SRE-124: Update runbooks (3 points)               │
+│  ├─ SRE-125: Optimize queries (13 points)             │
+│  ├─ SRE-126: Implement auto-scaling (21 points)       │
+│  └─ SRE-127: Security audit fixes (8 points)          │
+│                                                         │
+│  Total: 71 story points                                │
+│  Buffer: 9 points (for incidents/interruptions)        │
+└────────────────────────────────────────────────────────┘
+```
+
+**Sprint Burndown Chart:**
+
+```
+Story Points Remaining
+
+80 │●
+   │ ●
+70 │  ●●
+   │     ●
+60 │      ●
+   │       ●●
+50 │          ●
+   │           ●
+40 │            ●●
+   │               ●
+30 │                ●
+   │                 ●
+20 │                  ●●
+   │                     ●
+10 │                      ●●
+   │                         ●
+ 0 │__________________________|●
+   Mon Tue Wed Thu Fri Mon Tue Wed Thu Fri
+   Day 1                              Day 10
+
+Ideal: Straight line from 80 to 0
+Actual: Team's progress (●)
+
+Analysis:
+- Started slow (learning new tools)
+- Caught up mid-sprint
+- On track to complete all work
+```
+
+---
+
+### **F) Jira Dashboards**
+
+```
+╔════════════════════════════════════════════════════════════╗
+║  SRE Team Dashboard                                        ║
+╠════════════════════════════════════════════════════════════╣
+║                                                            ║
+║  ┌────────────────────────┐  ┌────────────────────────┐  ║
+║  │ Sprint Progress        │  │ My Open Issues         │  ║
+║  ├────────────────────────┤  ├────────────────────────┤  ║
+║  │ Completed: 45/71 pts   │  │ SRE-123 (In Progress)  │  ║
+║  │ Remaining: 26 pts      │  │ SRE-128 (To Do)        │  ║
+║  │ Days left: 5           │  │ SRE-129 (To Do)        │  ║
+║  │ Status: On Track ✅    │  │                        │  ║
+║  └────────────────────────┘  └────────────────────────┘  ║
+║                                                            ║
+║  ┌────────────────────────────────────────────────────┐  ║
+║  │ Created vs Resolved (Last 30 Days)                 │  ║
+║  ├────────────────────────────────────────────────────┤  ║
+║  │ 50┤    ╱●                                          │  ║
+║  │   │   ╱  ●                                         │  ║
+║  │ 40┤  ╱    ●      ●───●                            │  ║
+║  │   │ ╱           ╱                                   │  ║
+║  │ 30┼●          ●╱                                    │  ║
+║  │   │          Created (higher = more work coming)   │  ║
+║  │ 20┤      ●───●  Resolved (catching up)             │  ║
+║  │   │     ╱                                           │  ║
+║  │ 10┤  ●─●                                            │  ║
+║  │   └──────────────────────────────────              │  ║
+║  │   Week 1  Week 2  Week 3  Week 4                   │  ║
+║  └────────────────────────────────────────────────────┘  ║
+║                                                            ║
+║  ┌─────────────────────────────────────────────────────┐ ║
+║  │ Issue Type Distribution                             │ ║
+║  ├─────────────────────────────────────────────────────┤ ║
+║  │ Tasks:  ████████████████░░░░ 40 (57%)              │ ║
+║  │ Bugs:   ██████████░░░░░░░░░░ 20 (29%)              │ ║
+║  │ Stories:██████░░░░░░░░░░░░░░ 10 (14%)              │ ║
+║  └─────────────────────────────────────────────────────┘ ║
+║                                                            ║
+║  ┌─────────────────────────────────────────────────────┐ ║
+║  │ Team Workload                                        │ ║
+║  ├─────────────────────────────────────────────────────┤ ║
+║  │ Alice:   ████████░░ 8 issues                        │ ║
+║  │ Bob:     ██████████ 10 issues (overloaded!)         │ ║
+║  │ Charlie: ██████░░░░ 6 issues                        │ ║
+║  │ David:   ████░░░░░░ 4 issues                        │ ║
+║  └─────────────────────────────────────────────────────┘ ║
+╚════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### **G) Jira + ServiceNow Integration**
+
+**How they work together:**
+
+```
+Scenario: Bug found in production
+
+1. Incident created in ServiceNow
+   ├─ INC0010678: Payment API bug
+   └─> P1 incident
+
+2. Root cause found: Code bug
+
+3. Auto-create Jira bug ticket
+   ├─ Bug: DEV-890 "Payment validation error"
+   ├─> Linked to: INC0010678
+   └─> Assigned to: Development team
+
+4. Developer fixes bug in Jira
+   ├─> Status: In Progress → Code Review → Done
+   └─> Comment syncs to ServiceNow incident
+
+5. Fix deployed via Change Request
+   ├─> ServiceNow CHG0005712
+   └─> References Jira DEV-890
+
+6. ServiceNow incident resolved
+   └─> Auto-comment in Jira: "Related incident resolved"
+
+Full traceability:
+ServiceNow INC0010678 → Jira DEV-890 → ServiceNow CHG0005712
+```
+
+---
+
+## **How SREs Use Jira Day-to-Day**
+
+### **Daily Standup (15 min meeting):**
+
+```
+Each team member answers:
+1. What did I do yesterday?
+2. What am I doing today?
+3. Any blockers?
+
+Example:
+Alice: "Yesterday I finished SRE-123 monitoring setup.
+        Today I'm starting SRE-125 database optimization.
+        No blockers."
+
+Bob: "Yesterday I worked on SRE-120 RDS migration.
+      Today I'm continuing it, about 70% done.
+      Blocker: Need AWS IAM permissions from security team."
+      
+Charlie: "I'll help Bob get those permissions today."
+```
+
+---
+
+### **Sprint Retrospective (End of sprint):**
+
+```
+What went well:
+├─ Completed all planned work (71/71 points!)
+├─ Good collaboration on RDS migration
+└─ New monitoring dashboard is useful
+
+What didn't go well:
+├─ Had 3 unplanned incidents (took 20% of time)
+├─ Some tickets lacked clear acceptance criteria
+└─ Too many meetings interrupted focused work
+
+Action items for next sprint:
+├─ Leave 30% capacity buffer for incidents
+├─ Improve ticket descriptions
+└─ Block "focus time" in calendars
+```
+
+---
+
+## **Jira Best Practices for SREs**
+
+### **1. Good Ticket Writing:**
+
+**Bad ticket:**
+```
+Title: Fix the thing
+Description: It's broken, fix it
+```
+
+**Good ticket:**
+```
+Title: SRE-145: Set up automated SSL cert renewal for api.company.com
+
+Description:
+Currently SSL certs are renewed manually each year. This is error-prone
+and has caused outages in the past (INC0009876).
+
+Goal: Automate cert renewal using Let's Encrypt + certbot
+
+Acceptance Criteria:
+- Certbot installed and configured
+- Cron job set up for auto-renewal
+- Monitoring alert for expiring certs
+- Runbook updated
+- Tested in staging first
+
+Related:
+- ServiceNow PRB0001145 (Manual cert renewals problem)
+- Confluence doc: "SSL Certificate Standards"
+```
+
+---
+
+### **2. Use Labels for Quick Filtering:**
+
+```
+Common labels:
+├─ monitoring
+├─ database
+├─ kubernetes
+├─ security
+├─ high-priority
+├─ technical-debt
+├─ toil-reduction
+└─ quick-win
+
+Quick filter: "high-priority AND kubernetes"
+→ Shows all urgent K8s work
+```
+
+---
+
+### **3. Link Related Issues:**
+
+```
+SRE-123: Set up monitoring
+├─ Blocks: SRE-130 (Can't go live without monitoring)
+├─ Related to: DEV-456 (The service being monitored)
+└─ Caused by: PRB0001234 (Problem that led to this work)
+```
+
+---
+
+## **Complete Tool Integration Example**
+
+**Let's see how ALL these tools work together in a real scenario:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  SCENARIO: API Performance Degradation                      │
+└─────────────────────────────────────────────────────────────┘
+
+02:15 AM - DETECTION
+├─ DATADOG: API p95 latency > 1000ms (threshold: 500ms)
+├─> Alert: "API Performance Degradation"
+└─> Sends to OpsGenie
+
+02:15 AM - ALERTING
+├─ OPSGENIE: Receives alert
+├─> Pages primary on-call: Alice
+├─> Creates ServiceNow incident automatically
+└─> Alice's phone: LOUD RINGING
+
+02:17 AM - ACKNOWLEDGMENT
+├─ Alice acknowledges in OpsGenie app
+├─> Status syncs to Datadog (Acknowledged)
+└─> Status syncs to ServiceNow (In Progress)
+
+02:18 AM - INVESTIGATION
+├─ Alice opens DATADOG dashboard
+├─> APM traces show slow database queries
+├─> Logs show "Connection pool exhausted"
+└─> Root cause: Too many connections
+
+02:25 AM - COMMUNICATION
+├─ Alice updates STATUSPAGE:
+│  └─> "Investigating slow API response times"
+└─> 5,000 subscribers notified
+
+02:30 AM - QUICK FIX
+├─ Alice restarts connection pool (workaround)
+├─> API latency drops to normal
+└─> Updates ServiceNow: "Temporary fix applied"
+
+02:35 AM - RESOLUTION
+├─ DATADOG: Latency back to normal
+├─> Auto-resolves monitor
+├─ SERVICENOW: Alice marks incident Resolved
+├─> Resolution: "Restarted connection pool"
+└─ STATUSPAGE: Posts "Resolved" update
+
+02:40 AM - POST-INCIDENT
+├─ Alice creates SERVICENOW Problem:
+│  └─> PRB0001250: "Connection pool sizing issue"
+├─> Links to 4 related incidents (recurring issue!)
+└─> Root cause analysis started
+
+09:00 AM - NEXT DAY
+├─ Alice creates JIRA task:
+│  └─> SRE-150: "Increase connection pool size"
+│  └─> Links to ServiceNow PRB0001250
+├─> Adds to current sprint
+└─> Estimated: 5 story points
+
+10:00 AM - CHANGE MANAGEMENT
+├─ Alice creates SERVICENOW Change Request:
+│  └─> CHG0005720: "Increase API connection pool"
+│  ├─> Implementation plan documented
+│  ├─> Rollback plan documented
+│  └─> Scheduled for Friday 2 AM
+└─> Sends for approval
+
+Day 2 - APPROVALS
+├─ Manager: ✅ Approved
+├─ CAB: ✅ Approved
+└─> Change scheduled
+
+Friday 2 AM - IMPLEMENTATION
+├─ Alice implements change per plan
+├─> Updates ServiceNow: "Implementation successful"
+├─> Updates Jira SRE-150: "Done"
+└─> Monitors in Datadog: All green ✅
+
+Friday 9 AM - CLOSURE
+├─ SERVICENOW:
+│  ├─> Change: Closed (Successful)
+│  ├─> Problem: Resolved
+│  └─> Incident: Closed
+├─ JIRA:
+│  └─> Task: Done
+├─ CLOUDHEALTH:
+│  └─> Notes slight increase in costs (acceptable)
+└─> Alice writes postmortem in Confluence
+
+METRICS TRACKED:
+├─ Incident MTTR: 20 minutes (within SLA)
+├─ Problem resolution: 3 days (excellent)
+├─ Change success: 100%
+├─ Uptime impact: 0.02% (20 min downtime)
+└─> All tools provided audit trail
+```
+
+---
+
+## **Summary: The Complete Stack**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│  1. DATADOG: "What's happening right now?"              │
+│     └─> Metrics, logs, traces, APM                      │
+│                                                          │
+│  2. SITE24x7: "Can users access our services?"          │
+│     └─> External monitoring, uptime checks              │
+│                                                          │
+│  3. OPSGENIE: "Who needs to know?"                      │
+│     └─> On-call, escalation, pages engineers            │
+│                                                          │
+│  4. STATUSPAGE: "What do customers know?"               │
+│     └─> Public status, incident communication           │
+│                                                          │
+│  5. CLOUDHEALTH: "How much are we spending?"            │
+│     └─> Cost optimization, budget tracking              │
+│                                                          │
+│  6. SERVICENOW: "What work is happening?"               │
+│     └─> Incidents, problems, changes, governance        │
+│                                                          │
+│  7. JIRA: "What are we building?"                       │
+│     └─> Tasks, projects, sprints, development           │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+
+GOLDEN RULE:
+All tools are connected. Information flows between them.
+Learn how they integrate, not just how they work individually.
+```
+
+---
+
