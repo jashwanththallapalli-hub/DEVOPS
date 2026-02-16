@@ -1,4 +1,3 @@
-**Alright, let me break down these observability and incident management tools for you. I'll explain what they are, why they exist, how they work together, and what you need to know as an SRE.**
 
 ---
 
