@@ -1,0 +1,1 @@
+echo"this is a sample one and i am trying to know how branching works in git"
